@@ -62,12 +62,12 @@
               <span class="author-block">
                 <a href="https://yunfan1202.github.io/" target="_blank"> &nbsp;Yunfan Ye</a><sup>*,2</sup>,</span>
               <span class="author-block">
-                &nbsp;Fan Zhang,
+                &nbsp;Fan Zhang<sup>1</sup>,
               </span>
               <span class="author-block">
-                &nbsp;Qingyang Zhou,
+                &nbsp;Qingyang Zhou<sup>1</sup>,
               </span><span class="author-block">
-                &nbsp;Yuchuan Luo,
+                &nbsp;Yuchuan Luo<sup>1</sup>,
               </span>
               <span class="author-block">
                 <a href="http://individual.utoronto.ca/zcai/" target="_blank"> &nbsp;Zhiping
@@ -112,7 +112,7 @@
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
-                    <span>Code(Coming Soon)</span>
+                    <span>Code</span>
                   </a>
                 </span>
 
@@ -197,17 +197,40 @@
   </section>
   <!-- End paper abstract -->
 
+  <!-- Method -->
+  <section class="hero is-white">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <h2 class="title is-3 has-text-centered">Method</h2>
+        <img src="static/images/fig2.jpg" alt="HumanSAM Method" style="width: 100%; height: auto;">
+        <div class="content has-text-justified" style="margin-top: 20px;">
+          <p>
+            Our proposed HumanSAM framework consists of three main components: (1) A dual-branch architecture that 
+            combines video understanding and spatial depth analysis to capture geometry, semantics, and spatiotemporal 
+            consistency features; (2) A rank-based confidence enhancement strategy that leverages three prior scores 
+            to learn more robust representations during training; and (3) A multi-class classification head that 
+            categorizes human-centric forgeries into spatial, appearance, and motion anomaly types. The framework 
+            processes input videos through both RGB and depth modalities, extracting complementary features that are 
+            fused to create comprehensive human forgery representations for accurate classification.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End method -->
+
 
   <!-- Image carousel -->
   <section class="hero is-small">
     <div class="hero-body">
       <div class="container">
+        <h2 class="title is-3 has-text-centered">Qualitative Display of Anomaly Images </h2>
         <div id="results-carousel" class="carousel results-carousel">
           <div class="item">
             <!-- Your image here -->
             <img src="static/images/spatital.jpg" alt="MY ALT TEXT" />
             <h2 class="subtitle has-text-centered content has-text-justified">
-              It can be seen that in the first row, two metal knives blur and pass through each other; in the second
+              <b>Spatital Anomaly : </b>It can be seen that in the first row, two metal knives blur and pass through each other; in the second
               row, a woman's hand blurs as it reaches into the harp; in the third row, a person's hand passes through a
               clay pot under production without leaving any traces. Overall, this violates spatial logic and the normal
               rules of object interaction.
@@ -217,7 +240,7 @@
             <!-- Your image here -->
             <img src="static/images/appearance.jpg" alt="MY ALT TEXT" />
             <h2 class="subtitle has-text-centered content has-text-justified">
-              It can be seen that in the first row, the hand on the right suddenly
+              <b>Appearance Anomaly : </b>It can be seen that in the first row, the hand on the right suddenly
               changes from an apparently left hand to a right hand. In the second row, the number of fingers on the
               right hand changes from six to five. In the third row, the object held in the hand gradually disappears.
               Generally speaking, the consistency in appearance cannot be maintained.
@@ -228,7 +251,7 @@
             <!-- Your image here -->
             <img src="static/images/motion.jpg" alt="MY ALT TEXT" />
             <h2 class="subtitle has-text-centered content has-text-justified">
-              It can be observed that in the first row, the woman's body maintains a
+              <b>Motion Anomaly : </b>It can be observed that in the first row, the woman's body maintains a
               forward-leaning tendency, but her head suddenly rotates 180 degrees. In the second row, the girl's right
               hand takes on the shape of a left hand. In the third row, the girl's right hand assumes the posture of a
               left hand, which would be appropriate if the girl's body were rotated around. Generally speaking, the
