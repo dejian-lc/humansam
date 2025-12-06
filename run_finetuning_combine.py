@@ -408,7 +408,7 @@ def main(args):
         dataset_val = None
     else:
         dataset_val, _ = build_dataset(is_train=False, test_mode=False, args=args)
-    dataset_test, _ = build_dataset(is_train=False, test_mode=True, args=args)
+    # dataset_test, _ = build_dataset(is_train=False, test_mode=True, args=args)
 
     num_tasks = accelerator.num_processes
     global_rank = accelerator.process_index
@@ -423,11 +423,11 @@ def main(args):
                   'equal num of samples per-process.')
         sampler_val = torch.utils.data.DistributedSampler(
             dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-        sampler_test = torch.utils.data.DistributedSampler(
-            dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=False)
+        # sampler_test = torch.utils.data.DistributedSampler(
+        #     dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=False)
     else:
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-        sampler_test = torch.utils.data.SequentialSampler(dataset_test)
+        # sampler_test = torch.utils.data.SequentialSampler(dataset_test)
 
     if global_rank == 0 and args.log_dir is not None:
         os.makedirs(args.log_dir, exist_ok=True)
@@ -462,17 +462,17 @@ def main(args):
     else:
         data_loader_val = None
 
-    if dataset_test is not None:
-        data_loader_test = torch.utils.data.DataLoader(
-            dataset_test, sampler=sampler_test,
-            batch_size=args.batch_size,
-            num_workers=args.num_workers,
-            pin_memory=args.pin_mem,
-            drop_last=False,
-            persistent_workers=True
-        )
-    else:
-        data_loader_test = None
+    # if dataset_test is not None:
+    #     data_loader_test = torch.utils.data.DataLoader(
+    #         dataset_test, sampler=sampler_test,
+    #         batch_size=args.batch_size,
+    #         num_workers=args.num_workers,
+    #         pin_memory=args.pin_mem,
+    #         drop_last=False,
+    #         persistent_workers=True
+    #     )
+    # else:
+    #     data_loader_test = None
 
     mixup_fn = None
 
