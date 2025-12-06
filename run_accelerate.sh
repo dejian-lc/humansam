@@ -1,9 +1,9 @@
-JOB_NAME='test_decord_accelerate_depth'
+JOB_NAME='test_decord_accelerate_single'
 OUTPUT_DIR="./results/$JOB_NAME"
 LOG_DIR="./logs/${JOB_NAME}"
-PREFIX='/home/lc/workspace/AIGVDet/cls_test_82_win_video'
-LABEL_PATH='/home/lc/workspace/AIGVDet/cls_test_82_win_video'
-MODEL_PATH='/home/lc/workspace/InternVideo/InternVideo2/single_modality/internvideo2-L14-k400.bin'
+PREFIX='data/train_data/cls_test_82_win_video'
+LABEL_PATH='data/train_data/cls_test_82_win_video'
+MODEL_PATH='checkpoints/internvideo2_model/internvideo2-L14-k400.bin'
 DEPTH_MODEL_PATH='./checkpoints/depth_model/depth_pro.pt'
 
 # 使用 accelerate launch 启动
@@ -11,7 +11,7 @@ DEPTH_MODEL_PATH='./checkpoints/depth_model/depth_pro.pt'
 # 如果需要指定 GPU 数量，可以使用 --num_processes
 # 例如: accelerate launch --num_processes 2 run_finetuning_combine.py ...
 
-accelerate launch --num_processes 1 --mixed_precision fp16 run_finetuning_combine.py \
+accelerate launch --num_processes 2 --mixed_precision fp16 run_finetuning_combine.py \
     --model internvideo2_cat_large_patch14_224 \
     --data_path ${LABEL_PATH} \
     --prefix ${PREFIX} \
@@ -45,5 +45,5 @@ accelerate launch --num_processes 1 --mixed_precision fp16 run_finetuning_combin
     --test_num_crop 3 \
     --use_decord \
     --depth_checkpoint_path ${DEPTH_MODEL_PATH} \
-    # --no_return_depth
+    --no_return_depth
     # --use_conf
