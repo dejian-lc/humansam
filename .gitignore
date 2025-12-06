@@ -218,3 +218,5 @@ __marimo__/
 eval_results/
 logs/
 results/
+checkpoints/
+data/
