@@ -434,7 +434,7 @@ def merge(eval_path, num_tasks, nb_classes):
 
     with open(os.path.join(eval_path, 'metrics.txt'), 'w') as f:
         f.write(f'Metric\tValue\n')
-        f.write(f'Accuracy\t{final_top1:.2f}\n')
+        f.write(f'Accuracy\t{final_top1 * 100:.2f}\n')
         # f.write(f'Top-5 Accuracy\t{final_top5:.2f}\n')
         f.write(f'Precision\t{precision * 100:.2f}\n')
         f.write(f'Recall\t{recall * 100:.2f}\n')
