@@ -3,7 +3,7 @@
 
 <div align="center">
 
-[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/[LINK])
+[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/2507.19924)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://dejian-lc.github.io/humansam/)
 [![HF Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/[LINK])
 [![HF Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/[LINK])
@@ -22,7 +22,7 @@ To better capture the features of geometry, semantics and spatiotemporal consist
 
 ## 🚀 News
 - **[2025-12-12]** The code and dataset are released.
-- **[2025-XX-XX]** HumanSAM is accepted by ICCV 2025!
+- **[2025-06-26]** HumanSAM is accepted by ICCV 2025!
 
 ## 🛠️ Installation
 
@@ -103,12 +103,19 @@ If you find this work useful for your research, please cite our paper:
 ```bibtex
 @inproceedings{liu2025humansam,
   title={HumanSAM: Classifying Human-centric Forgery Videos in Human Spatial, Appearance, and Motion Anomaly},
-  author={Liu, Chang and [Other Authors]},
-  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  author={Liu, Chang and Ye, Yunfan and Zhang, Fan and Zhou, Qingyang and Luo, Yuchuan and Cai, Zhiping},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={14028--14038},
   year={2025}
 }
 ```
 
+## 🙏 Acknowledgement
+
+This project is built upon the following open-source projects. We thank the authors for their great work!
+- [InternVideo2](https://github.com/OpenGVLab/InternVideo/tree/main/InternVideo2)
+- [Depth Pro](https://github.com/apple/ml-depth-pro)
+
 ## 📧 Contact
 
-If you have any questions, please feel free to contact us at [EMAIL] or open an issue in this repository.
+If you have any questions, please feel free to contact us at liudawn@nudt.edu.cn or open an issue in this repository.
