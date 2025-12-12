@@ -5,9 +5,10 @@
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/2507.19924)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://dejian-lc.github.io/humansam/)
-[![HF Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/[LINK])
-[![HF Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/[LINK])
-[![ModelScope](https://img.shields.io/badge/ModelScope-Model-purple)](https://modelscope.cn/models/[LINK])
+[![HF Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/dejian-lc/humansam)
+[![ModelScope Dataset](https://img.shields.io/badge/ModelScope-Dataset-purple)](https://www.modelscope.cn/datasets/DawnOfDark/HFV)
+[![HF Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/dejian-lc/humansam)
+[![ModelScope](https://img.shields.io/badge/ModelScope-Model-purple)](https://modelscope.cn/models/DawnOfDark/humansam)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
 </div>
@@ -32,61 +33,96 @@ To better capture the features of geometry, semantics and spatiotemporal consist
    cd humansam
    ```
 
-2. **Create a conda environment**
+2. **Download Checkpoints**
+   
+   Please download the `checkpoints` directory from [Hugging Face Model](https://huggingface.co/dejian-lc/humansam) or [ModelScope Model](https://modelscope.cn/models/DawnOfDark/humansam) and place it in the root directory. 
+   
+   > **Important:** This directory contains the necessary **Flash Attention wheels** required for the installation step below, as well as the pre-trained models.
+
+3. **Create a conda environment**
    ```bash
    conda create -n internvideo_new python=3.10 -y
    conda activate internvideo_new
    ```
 
-3. **Install dependencies**
+4. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Install Flash Attention**
+5. **Install Flash Attention (Highly Recommended)**
+
+   Flash Attention is crucial for memory efficiency. Without it, GPU memory usage may **triple** (e.g., increasing from ~20GB to ~60GB). With the current configuration using Flash Attention, the model can be trained on a **24GB GPU**.
+
+   We provide pre-compiled wheels compatible with **PyTorch 2.8.0** (Flash Attention 2.8.3) in the `checkpoints/flashattn_wheel` directory, which includes `flash_attn`, `fused_dense_lib`, and `layer_norm`.
+
    ```bash
-   # Ensure you have the correct wheel file in the checkpoints directory
    pip install checkpoints/flashattn_wheel/*.whl
    ```
 
+   > **Note:** If you intend to use a different version of Flash Attention, you will need to clone the [Flash Attention repository](https://github.com/Dao-AILab/flash-attention) and manually compile `fused_dense_lib` and `layer_norm` using the CUDA Toolkit.
+
 ## 📂 Data Preparation
 
-Please download the **HFV Dataset** from [HuggingFace](https://huggingface.co/datasets/[LINK]) or [ModelScope](https://modelscope.cn/datasets/[LINK]).
+Please download the `data` directory from [Hugging Face Dataset](https://huggingface.co/datasets/dejian-lc/humansam) or [ModelScope Dataset](https://www.modelscope.cn/datasets/DawnOfDark/HFV) and place it in the root directory.
 
 Organize the data structure as follows:
 
 ```
 data/
 ├── train_data/
-│   ├── spatial/
-│   ├── appearance/
-│   └── motion/
+│   └── cls_test_82_win_video/
+│       ├── [Video Files].mp4
+│       ├── train_2.csv
+│       ├── val_2.csv
+│       ├── train_4.csv
+│       └── val_4.csv
 └── eval_data/
-    ├── spatial/
-    ├── appearance/
-    └── motion/
+    ├── CogVideoX-5B_human_dim/
+    │   ├── [Video Files].mp4
+    │   ├── test_2.csv
+    │   └── test_4.csv
+    ├── Kling_human_dim/
+    ├── MinMax_human_dim/
+    ├── Vchitect-2.0-2B_human_dim/
+    ├── Vchitect-2.0-2B+VEnhancer_human_dim/
+    ├── gen_2_human_dim/
+    ├── gen3_human_dim/
+    └── pika_1_human_dim/
 ```
+
+### Custom Dataset Organization
+
+If you organize your own dataset, please ensure it follows the structure above.
+
+- **File Naming**:
+  - For **binary classification**, use the `_2` suffix for CSV files (e.g., `train_2.csv`, `val_2.csv`, `test_2.csv`).
+  - For **multi-class classification** (4 classes), use the `_4` suffix for CSV files (e.g., `train_4.csv`, `val_4.csv`, `test_4.csv`).
+
+- **CSV Content Format**:
+  - **Column 1**: Video filename.
+  - **Column 2**: Corresponding label.
+  - **Column 3** (Optional for 2-class or 4-class training CSV): Confidence score.
 
 ## 🏋️ Training
 
-To train the HumanSAM model on the HFV dataset, run the following command:
+To train the HumanSAM model on the HFV dataset, please use the provided `run_accelerate.sh` script:
 
 ```bash
-# Example training command
-python run_finetuning_combine.py \
-    --model humansam \
-    --data_path ./data/train_data \
-    --output_dir ./checkpoints/humansam_finetuned \
-    --batch_size 8 \
-    --epochs 50 \
-    --lr 1e-4
+bash run_accelerate.sh
 ```
 
-> **Note:** Please adjust the hyperparameters in `run_finetuning_combine.py` or via command line arguments according to your hardware configuration.
+**Key Parameters:**
+- `nb_classes`: Specify the number of classification classes (e.g., `2` for binary classification, `4` for multi-class classification).
+- `--use_conf`: Add this flag to enable the rank-based confidence enhancement strategy (requires confidence scores in the training CSV).
+
+> **Note:** Please adjust the hyperparameters in `run_accelerate.sh` or via command line arguments according to your hardware configuration.
 
 ## 🧪 Evaluation
 
-To evaluate the trained model on the test set:
+The `checkpoints/humansam` directory contains pre-trained models for both **binary** and **4-class** evaluation on the HFV dataset.
+
+To evaluate the model on the test set:
 
 ```bash
 # Single dataset evaluation
