@@ -806,6 +806,8 @@ class SSVideoClsDatasetCombine(Dataset):
                     label_list.append(self.label_array[index])
                     if self.conf_array is not None:
                         conf_list.append(self.conf_array[index])
+                    else:
+                        conf_list.append(index)
                     depth_list.append(depth_frames)
                 return frame_list, label_list, conf_list, depth_list
             else:

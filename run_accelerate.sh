@@ -1,4 +1,4 @@
-JOB_NAME='test_decord_accelerate_single'
+JOB_NAME='test_decord_accelerate_4'
 OUTPUT_DIR="./results/$JOB_NAME"
 LOG_DIR="./logs/${JOB_NAME}"
 PREFIX='data/train_data/cls_test_82_win_video'
@@ -11,13 +11,13 @@ DEPTH_MODEL_PATH='./checkpoints/depth_model/depth_pro.pt'
 # 如果需要指定 GPU 数量，可以使用 --num_processes
 # 例如: accelerate launch --num_processes 2 run_finetuning_combine.py ...
 
-accelerate launch --num_processes 2 --mixed_precision fp16 run_finetuning_combine.py \
+accelerate launch --num_processes 1 --mixed_precision fp16 run_finetuning_combine.py \
     --model internvideo2_cat_large_patch14_224 \
     --data_path ${LABEL_PATH} \
     --prefix ${PREFIX} \
     --data_set 'SSV2' \
     --split ',' \
-    --nb_classes 2 \
+    --nb_classes 4 \
     --finetune ${MODEL_PATH} \
     --log_dir ${LOG_DIR} \
     --output_dir ${OUTPUT_DIR} \
@@ -28,7 +28,7 @@ accelerate launch --num_processes 2 --mixed_precision fp16 run_finetuning_combin
     --short_side_size 224 \
     --save_ckpt_freq 100 \
     --num_frames 8 \
-    --num_workers 8 \
+    --num_workers 12 \
     --warmup_epochs 5 \
     --tubelet_size 1 \
     --epochs 100 \
@@ -45,5 +45,5 @@ accelerate launch --num_processes 2 --mixed_precision fp16 run_finetuning_combin
     --test_num_crop 3 \
     --use_decord \
     --depth_checkpoint_path ${DEPTH_MODEL_PATH} \
-    --no_return_depth
-    # --use_conf
+    --use_conf
+    # --no_return_depth

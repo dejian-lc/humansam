@@ -2,11 +2,11 @@
 
 # 基础配置
 # 待测试的父目录
-PARENT_DIR='/home/lc/workspace/AIGVDet/cls_test_final_video'
+PARENT_DIR='data/eval_data'
 # 模型权重路径 (与 run_eval.sh 保持一致，如有需要请修改)
-CHECKPOINT_PATH='/home/lc/workspace/humansam/results/test_decord_accelerate_single/checkpoint-latest.pth'
+CHECKPOINT_PATH='checkpoints/humansam/cls_4/cls_4_checkpoint-latest.pth'
 # 结果输出总目录
-BASE_OUTPUT_DIR="eval_results/batch_test_results"
+BASE_OUTPUT_DIR="eval_results/cls_4_batch_eval_latest"
 
 # 创建汇总文件
 mkdir -p "$BASE_OUTPUT_DIR"
@@ -40,23 +40,23 @@ for folder_path in "$PARENT_DIR"/*; do
         
         # 运行评估命令
         # 使用与 run_eval.sh 相同的参数，动态替换 data_path 和 prefix
-        accelerate launch --num_processes 1 --mixed_precision fp16 eval.py \
+        accelerate launch --num_processes 2 --mixed_precision fp16 eval.py \
             --model internvideo2_cat_large_patch14_224 \
             --data_path "$folder_path" \
             --prefix "$folder_path" \
             --data_set 'SSV2' \
             --split ',' \
-            --nb_classes 2 \
+            --nb_classes 4 \
             --finetune "$CHECKPOINT_PATH" \
             --log_dir "$LOG_DIR" \
             --output_dir "$OUTPUT_DIR" \
-            --batch_size 64 \
+            --batch_size 2 \
             --num_frames 8 \
             --sampling_rate 4 \
             --num_sample 1 \
             --short_side_size 224 \
             --save_ckpt_freq 100 \
-            --num_workers 12 \
+            --num_workers 8 \
             --warmup_epochs 0 \
             --tubelet_size 1 \
             --opt adamw \
@@ -69,7 +69,7 @@ for folder_path in "$PARENT_DIR"/*; do
             --test_num_crop 3 \
             --dist_eval \
             --use_decord \
-            --no_return_depth
+            # --no_return_depth
         
         # 提取结果
         METRIC_FILE="${OUTPUT_DIR}/metrics.txt"

@@ -508,6 +508,13 @@ def main(args):
     if args.return_depth:
         depth_model = create_depth_pro_encoder(checkpoint_path=args.depth_checkpoint_path)
         model = humansam.HumanSAM(model, depth_model, args.nb_classes, args.num_sample)
+        
+        # Freeze unused head in model1 to avoid DDP errors
+        if hasattr(model.model1, 'head'):
+            print("Freezing unused model1.head")
+            for param in model.model1.head.parameters():
+                param.requires_grad = False
+
         # if args.eval:
         #     combined_checkpoint = torch.load('/home/lc/workspace/InternVideo/InternVideo2/single_modality'
         #                                      '/ro_moel/conf_xiaorong_best/checkpoint'
