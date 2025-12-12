@@ -432,7 +432,7 @@ def main(args):
         init_scale=args.init_scale,
         init_values=args.layer_scale_init_value,
         layerscale_no_force_fp32=args.layerscale_no_force_fp32,
-        return_features=args.return_depth, # 如果启用深度分支，则返回特征供 HumanSAM 使用
+        return_features=args.return_depth, # If depth branch is enabled, return features for HumanSAM
     )
 
     patch_size = model.patch_embed.patch_size

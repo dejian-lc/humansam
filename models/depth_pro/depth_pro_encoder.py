@@ -130,7 +130,7 @@ def create_depth_pro_encoder(
     if checkpoint_uri is not None:
         state_dict = torch.load(checkpoint_uri, map_location="cpu")
 
-        # 创建一个映射函数，将权重文件中的键名映射到模型结构中的键名
+        # Create a mapping function to map key names in the weight file to key names in the model structure
         def map_state_dict_keys(state_dict_o):
             new_state_dict = {}
             for key, value in state_dict_o.items():

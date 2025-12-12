@@ -246,7 +246,7 @@ class Attention(nn.Module):
         attn = ((q * self.scale) @ k.transpose(-2, -1))
         # attn = attn - attn.max(-1)[0].unsqueeze(-1)  # in case of overflow for fp16
         attn = attn.softmax(dim=-1)
-        self.attn = attn  # 保存注意力图
+        self.attn = attn  # Save attention map
         # print(f"attn shape: {attn.shape}")
         attn = self.attn_drop(attn)
 

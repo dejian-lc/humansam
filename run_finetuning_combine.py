@@ -493,7 +493,7 @@ def main(args):
         init_scale=args.init_scale,
         init_values=args.layer_scale_init_value,
         layerscale_no_force_fp32=args.layerscale_no_force_fp32,
-        return_features=args.return_depth, # 如果启用深度分支，则返回特征供 HumanSAM 使用
+        return_features=args.return_depth, # If depth branch is enabled, return features for HumanSAM
     )
 
     patch_size = model.patch_embed.patch_size
@@ -625,8 +625,8 @@ def main(args):
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
     max_accuracy = 0.0
-    patience = 100  # 设定早停的耐心值
-    epochs_no_improve = 0  # 记录没有提升的 epoch 数
+    patience = 100  # Set patience for early stopping
+    epochs_no_improve = 0  # Record number of epochs with no improvement
     for epoch in range(args.start_epoch, args.epochs):
         if log_writer is not None:
             log_writer.set_step(epoch * num_training_steps_per_epoch * args.update_freq)

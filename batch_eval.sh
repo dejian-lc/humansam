@@ -1,20 +1,20 @@
 #!/bin/bash
 
-# 基础配置
-# 待测试的父目录
+# Basic configuration
+# Parent directory to be tested
 PARENT_DIR='data/eval_data'
-# 模型权重路径 (与 run_eval.sh 保持一致，如有需要请修改)
+# Model checkpoint path (consistent with run_eval.sh, modify if needed)
 CHECKPOINT_PATH='checkpoints/humansam/cls_4/cls_4_checkpoint-latest.pth'
-# 结果输出总目录
+# Total output directory for results
 BASE_OUTPUT_DIR="eval_results/cls_4_batch_eval_latest"
 
-# 创建汇总文件
+# Create summary file
 mkdir -p "$BASE_OUTPUT_DIR"
 SUMMARY_FILE="${BASE_OUTPUT_DIR}/summary.csv"
-# 写入 CSV 头
+# Write CSV header
 echo "Dataset,Accuracy,AUC" > "$SUMMARY_FILE"
 
-# 初始化变量用于计算均值
+# Initialize variables for calculating mean
 total_acc=0
 total_auc=0
 count=0
@@ -25,21 +25,21 @@ echo "Checkpoint: $CHECKPOINT_PATH"
 echo "Output Directory: $BASE_OUTPUT_DIR"
 echo "------------------------------------------------"
 
-# 遍历父目录下的所有子文件夹
+# Iterate through all subfolders in the parent directory
 for folder_path in "$PARENT_DIR"/*; do
     if [ -d "$folder_path" ]; then
         folder_name=$(basename "$folder_path")
         echo "Processing dataset: $folder_name"
         
-        # 为每个数据集设置独立的输出目录和日志目录
+        # Set independent output directory and log directory for each dataset
         OUTPUT_DIR="${BASE_OUTPUT_DIR}/${folder_name}"
         LOG_DIR="./logs/batch_eval/${folder_name}"
         
         mkdir -p "$OUTPUT_DIR"
         mkdir -p "$LOG_DIR"
         
-        # 运行评估命令
-        # 使用与 run_eval.sh 相同的参数，动态替换 data_path 和 prefix
+        # Run evaluation command
+        # Use the same parameters as run_eval.sh, dynamically replace data_path and prefix
         accelerate launch --num_processes 2 --mixed_precision fp16 eval.py \
             --model internvideo2_cat_large_patch14_224 \
             --data_path "$folder_path" \
@@ -71,21 +71,21 @@ for folder_path in "$PARENT_DIR"/*; do
             --use_decord \
             # --no_return_depth
         
-        # 提取结果
+        # Extract results
         METRIC_FILE="${OUTPUT_DIR}/metrics.txt"
         if [ -f "$METRIC_FILE" ]; then
-            # 解析 Accuracy 和 AUC
-            # 假设 metrics.txt 格式: Metric Value (Tab 或空格分隔)
+            # Parse Accuracy and AUC
+            # Assume metrics.txt format: Metric Value (Tab or space separated)
             acc=$(grep "Accuracy" "$METRIC_FILE" | awk '{print $2}')
             auc=$(grep "AUC" "$METRIC_FILE" | awk '{print $2}')
             
             echo "  -> Accuracy: $acc"
             echo "  -> AUC: $auc"
             
-            # 写入汇总文件
+            # Write to summary file
             echo "$folder_name,$acc,$auc" >> "$SUMMARY_FILE"
             
-            # 累加 (使用 python 处理浮点数)
+            # Accumulate (use python to handle floating point numbers)
             total_acc=$(python3 -c "print($total_acc + $acc)")
             total_auc=$(python3 -c "print($total_auc + $auc)")
             count=$((count + 1))
@@ -98,7 +98,7 @@ for folder_path in "$PARENT_DIR"/*; do
     fi
 done
 
-# 计算并输出均值
+# Calculate and output mean
 if [ $count -gt 0 ]; then
     avg_acc=$(python3 -c "print(f'{$total_acc / $count:.4f}')")
     avg_auc=$(python3 -c "print(f'{$total_auc / $count:.4f}')")
@@ -108,7 +108,7 @@ if [ $count -gt 0 ]; then
     echo "Average Accuracy: $avg_acc"
     echo "Average AUC: $avg_auc"
     
-    # 将均值写入汇总文件
+    # Write mean to summary file
     echo "AVERAGE,$avg_acc,$avg_auc" >> "$SUMMARY_FILE"
     echo "Summary saved to $SUMMARY_FILE"
 else

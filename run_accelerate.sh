@@ -6,10 +6,10 @@ LABEL_PATH='data/train_data/cls_test_82_win_video'
 MODEL_PATH='checkpoints/internvideo2_model/internvideo2-L14-k400.bin'
 DEPTH_MODEL_PATH='./checkpoints/depth_model/depth_pro.pt'
 
-# 使用 accelerate launch 启动
-# 如果是单机多卡，accelerate 会自动检测
-# 如果需要指定 GPU 数量，可以使用 --num_processes
-# 例如: accelerate launch --num_processes 2 run_finetuning_combine.py ...
+# Launch using accelerate launch
+# If single machine multi-card, accelerate will automatically detect
+# If you need to specify the number of GPUs, you can use --num_processes
+# Example: accelerate launch --num_processes 2 run_finetuning_combine.py ...
 
 accelerate launch --num_processes 1 --mixed_precision fp16 run_finetuning_combine.py \
     --model internvideo2_cat_large_patch14_224 \

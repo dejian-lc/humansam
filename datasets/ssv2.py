@@ -183,7 +183,7 @@ class SSVideoClsDatasetFromRawFrame(Dataset):
             raise NameError('mode {} unkown'.format(self.mode))
 
     def _aug_frame(self, buffer, args):
-        """数据增强部分保持不变"""
+        """Data augmentation part remains unchanged"""
         aug_transform = create_random_augment(
             input_size=(self.crop_size, self.crop_size),
             auto_augment=args.aa,
@@ -240,10 +240,10 @@ class SSVideoClsDatasetFromRawFrame(Dataset):
         fname = sample
         fname = os.path.join(self.prefix, fname)
         
-        # 如果是帧序列路径，转换为视频文件路径
-        # 假设视频文件与帧序列文件夹同名，但扩展名为.mp4
+        # If it is a frame sequence path, convert to video file path
+        # Assume video file has the same name as frame sequence folder, but with .mp4 extension
         if os.path.isdir(fname) or '/' in fname:
-            # 提取目录名作为视频文件名
+            # Extract directory name as video filename
             dir_name = fname.rstrip('/')
             video_fname = dir_name + '.mp4'
         else:
@@ -275,7 +275,7 @@ class SSVideoClsDatasetFromRawFrame(Dataset):
             return []
 
         if self.mode == 'test':
-            # 测试模式：密集采样，保持与原始RawFrame相同的采样策略
+            # Test mode: dense sampling, keep the same sampling strategy as original RawFrame
             tick = num_frames / float(self.num_segment)
             all_index = []
             for t_seg in range(self.test_num_segment):
@@ -286,11 +286,11 @@ class SSVideoClsDatasetFromRawFrame(Dataset):
                 all_index.extend(tmp_index)
             all_index = list(np.sort(np.array(all_index)))
             
-            # 限制索引不超过视频总帧数
+            # Limit index not to exceed total video frames
             all_index = [min(idx, len(vr)-1) for idx in all_index]
             
         else:
-            # 训练和验证模式：保持与原始RawFrame相同的采样策略
+            # Train and validation mode: keep the same sampling strategy as original RawFrame
             average_duration = num_frames // self.num_segment
             all_index = []
             
@@ -312,7 +312,7 @@ class SSVideoClsDatasetFromRawFrame(Dataset):
             else:
                 all_index = [0] * (self.num_segment - num_frames) + list(range(num_frames))
             
-            # 限制索引不超过视频总帧数
+            # Limit index not to exceed total video frames
             all_index = [min(idx, len(vr)-1) for idx in all_index]
 
         try:
@@ -374,7 +374,7 @@ class SSRawFrameClsDatasetCombine(Dataset):
         self.total_frames = list(cleaned.values[:, 1])
         self.label_array = list(cleaned.values[:, 2])
         # self.conf_array = list(cleaned.values[:, -1])
-        # 判断是否有 conf_array
+        # Check if conf_array exists
         if cleaned.shape[1] == 4:
             self.conf_array = list(cleaned.values[:, -1])
         else:
@@ -501,7 +501,7 @@ class SSRawFrameClsDatasetCombine(Dataset):
 
             temporal_start = chunk_nb
             if self.test_num_crop == 1:
-                # 当test_num_crop为1时执行中心裁剪
+                # Perform center crop when test_num_crop is 1
                 h, w = buffer.shape[1], buffer.shape[2]
                 if h >= w:
                     offset_h = int((h - self.short_side_size) / 2)
@@ -514,7 +514,7 @@ class SSRawFrameClsDatasetCombine(Dataset):
                     buffer = buffer[temporal_start::self.test_num_segment, \
                            :, offset_w:offset_w + self.short_side_size, :]
             else:
-                # 原有的多裁剪逻辑
+                # Original multi-crop logic
                 spatial_step = 1.0 * (max(buffer.shape[1], buffer.shape[2]) - self.short_side_size) \
                                   / (self.test_num_crop - 1)
                 spatial_start = int(split_nb * spatial_step)
@@ -712,7 +712,7 @@ class SSVideoClsDatasetCombine(Dataset):
         self.args = args
         self.aug = False
         self.rand_erase = False
-        # 可选地恢复深度分支，默认开启以保持与帧版一致
+        # Optionally restore depth branch, enabled by default to maintain consistency with frame version
         self.return_depth = getattr(args, 'return_depth', True) if args is not None else False
 
         self.client = None
@@ -731,16 +731,16 @@ class SSVideoClsDatasetCombine(Dataset):
         cleaned = pd.read_csv(self.anno_path, header=None, delimiter=self.split)
         self.dataset_samples = list(cleaned.values[:, 0].astype('str'))
         
-        # 统一逻辑：不再从 CSV 读取帧数，使用 dummy 值填充
-        # 真实的帧数将在 load_video_decord 中通过 len(vr) 获取
+        # Unified logic: no longer read frame count from CSV, use dummy value to fill
+        # Actual frame count will be obtained via len(vr) in load_video_decord
         self.total_frames = [0] * len(self.dataset_samples)
 
         if cleaned.shape[1] == 2:
-            # 格式: [path, label]
+            # Format: [path, label]
             self.label_array = list(cleaned.values[:, 1])
             self.conf_array = None
         elif cleaned.shape[1] == 3:
-            # 格式: [path, label, conf]
+            # Format: [path, label, conf]
             self.label_array = list(cleaned.values[:, 1])
             self.conf_array = list(cleaned.values[:, 2])
         else:
@@ -1016,8 +1016,8 @@ class SSVideoClsDatasetCombine(Dataset):
             print(f"Video {video_fname} cannot be loaded by decord: {e}")
             return []
 
-        # 使用 decord 读取的真实帧数覆盖传入的 num_frames
-        # 这样即使 CSV 中的帧数不准确或为 0 也没关系
+        # Override passed num_frames with actual frame count read by decord
+        # This way it doesn't matter if frame count in CSV is inaccurate or 0
         num_frames = len(vr)
 
         if self.mode == 'test':
@@ -1203,10 +1203,10 @@ class SSVideoClsDataset(Dataset):
 
             temporal_start = chunk_nb # 0/1
             if self.test_num_crop == 1:
-                # 当test_num_crop为1时不进行裁剪，直接选择对应的时间段
+                # When test_num_crop is 1, do not crop, directly select the corresponding time segment
                 buffer = buffer[temporal_start::2, :, :, :]
             else:
-                # 原有的多裁剪逻辑
+                # Original multi-crop logic
                 spatial_step = 1.0 * (max(buffer.shape[1], buffer.shape[2]) - self.short_side_size) \
                                 / (self.test_num_crop - 1)
                 spatial_start = int(split_nb * spatial_step)

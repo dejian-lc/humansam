@@ -23,7 +23,7 @@ class SSVideoClsDatasetCombine(Dataset):
         self.args = args
         self.aug = False
         self.rand_erase = False
-        # 可选地恢复深度分支，默认开启以保持与帧版一致
+        # Optionally restore depth branch, enabled by default to maintain consistency with frame version
         self.return_depth = getattr(args, 'return_depth', True) if args is not None else False
 
         self.client = None

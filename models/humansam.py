@@ -52,7 +52,7 @@ class HumanSAM(nn.Module):
         features1 = self.fc1(features1) 
         hfr_features = self.alpha * features1 + (1 - self.alpha) * features2  # (bs, 1024)
 
-        # 分类
+        # Classification
         output = self.head(hfr_features)
         return output
 

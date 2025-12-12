@@ -24,10 +24,10 @@ def train_class_batch(model, samples, depths, target, criterion, confs=None, use
     if use_conf and confs is not None and confs.numel() > 0:
         weights = confs
 
-        # 将损失乘以对应的权重
+        # Multiply loss by corresponding weights
         weighted_losses = loss * weights
 
-        # 计算加权损失的平均值
+        # Calculate mean of weighted loss
         loss = torch.mean(weighted_losses)
     else:
         loss = loss.mean()
@@ -101,10 +101,10 @@ def train_one_epoch(
             if max_norm is not None:
                 grad_norm = accelerator.clip_grad_norm_(model.parameters(), max_norm)
             else:
-                # 如果没有设置 max_norm，我们仍然计算梯度范数用于记录
-                # accelerator.clip_grad_norm_ 会返回范数，即使 max_norm 很大
-                # 但为了避免不必要的裁剪操作，我们可以手动计算
-                # 或者简单地调用 clip_grad_norm_ 并传入一个非常大的值
+                # If max_norm is not set, we still calculate gradient norm for logging
+                # accelerator.clip_grad_norm_ returns the norm even if max_norm is large
+                # But to avoid unnecessary clipping, we can calculate it manually
+                # Or simply call clip_grad_norm_ with a very large value
                 grad_norm = accelerator.clip_grad_norm_(model.parameters(), 1e9)
             
             optimizer.step()
@@ -290,7 +290,7 @@ def merge(eval_path, num_tasks, nb_classes):
     # top5 = [x[2] for x in ans] # Removed Top-5
     pred = [x[0] for x in ans]
     label = [x[3] for x in ans]
-    pred_probs = [x[4] for x in ans]  # 获取每个样本的预测概率
+    pred_probs = [x[4] for x in ans]  # Get prediction probability for each sample
     final_top1 = np.mean(top1)
     
     # Initialize variables
@@ -503,78 +503,78 @@ def merge2(eval_path, num_tasks):
     top5 = [x[2] for x in ans]
     pred = [x[0] for x in ans]
     label = [x[3] for x in ans]
-    pred_probs = [x[4] for x in ans]  # 获取每个样本的预测概率
-    final_top1, final_top5 = np.mean(top1), np.mean(top5)    # 计算精确率、召回率、F1分数和AUC值
+    pred_probs = [x[4] for x in ans]  # Get prediction probability for each sample
+    final_top1, final_top5 = np.mean(top1), np.mean(top5)    # Calculate Precision, Recall, F1 Score, and AUC
     precision = precision_score(label, pred, average='binary')
     recall = recall_score(label, pred, average='binary')
     f1 = f1_score(label, pred, average='binary')
     
-    # 计算每个类别的F1分数
+    # Calculate F1 score for each class
     f1_per_class = f1_score(label, pred, average=None)
     class_names = ["Forgery", "Real"]
     
-    # 输出总体F1分数和每个类别的F1分数
+    # Output overall F1 score and F1 score for each class
     print(f"Binary F1 Score: {f1:.4f}")
     print(f"Per-class F1 scores:")
     for i, class_name in enumerate(class_names):
         if i < len(f1_per_class):
             print(f"{class_name}: {f1_per_class[i]:.4f}")
     
-    # 将预测概率转换为numpy数组
+    # Convert prediction probabilities to numpy array
     pred_probs = np.array(pred_probs)
     
-    # 检查label和pred_probs是否为空
+    # Check if label and pred_probs are empty
     if len(label) > 0 and len(pred_probs) > 0:
-        # 针对二分类使用第1列的预测概率（索引1对应正类）
+        # Use prediction probability of column 1 for binary classification (index 1 corresponds to positive class)
         auc = roc_auc_score(label, pred_probs[:, 1])
     else:
-        auc = float('nan')  # 如果为空，设置AUC为NaN
+        auc = float('nan')  # If empty, set AUC to NaN
     
-    # 计算混淆矩阵
+    # Calculate confusion matrix
     conf_matrix = confusion_matrix(label, pred)
     
-    # 定义类别标签
+    # Define class labels
     class_names = ["Forgery", "Real"]
     
-    # 可视化并保存混淆矩阵，使用增强的可视化设置
-    plt.figure(figsize=(7, 6))  # 统一尺寸
+    # Visualize and save confusion matrix, using enhanced visualization settings
+    plt.figure(figsize=(7, 6))  # Unified size
     
-    # 计算百分比
+    # Calculate percentage
     conf_pct = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis] * 100
     
-    # 创建注释文本（同时显示数量和百分比）
+    # Create annotation text (display both count and percentage)
     annot_text = np.array([[f'{val}\n({pct:.1f}%)' for val, pct in zip(row_val, row_pct)] 
                            for row_val, row_pct in zip(conf_matrix, conf_pct)])
     
-    # 使用自定义注释文本和更大的字体
+    # Use custom annotation text and larger font
     ax = sns.heatmap(conf_matrix, annot=annot_text, fmt='', cmap='Blues', 
                  annot_kws={"size": 15, "weight": "bold"}, 
                  cbar_kws={"shrink": 0.8})
     
-    # 调整文本位置，使其居中
+    # Adjust text position to center it
     for text in ax.texts:
         text.set_horizontalalignment('center')
     
-    # 设置坐标轴标签
+    # Set axis labels
     plt.xlabel('Predicted', fontsize=14)
     plt.ylabel('True', fontsize=14)
     
-    # 设置二分类标签
+    # Set binary classification labels
     plt.xticks([0.5, 1.5], class_names, fontsize=12, fontweight='bold')
     plt.yticks([0.5, 1.5], class_names, fontsize=12, fontweight='bold')
     
-    plt.tight_layout()  # 自动调整布局以适应标签
+    plt.tight_layout()  # Automatically adjust layout to fit labels
     plt.savefig(os.path.join(eval_path, 'binary_confusion_matrix.png'), dpi=300, bbox_inches='tight')
     plt.close()
     
-    # 保存样本名字、标签和预测结果到文本文件
+    # Save sample names, labels, and prediction results to text file
     with open(os.path.join(eval_path, 'binary_merged_results.txt'), 'w') as f:
         f.write(f'name\tlabel\tpred\tlabel_name\tpred_name\n')
         for name, lbl, prd in zip(dict_feats.keys(), label, pred):
             lbl_name = class_names[lbl] if lbl < len(class_names) else "Unknown"
             prd_name = class_names[prd] if prd < len(class_names) else "Unknown"
             f.write(f'{name}\t{lbl}\t{prd}\t{lbl_name}\t{prd_name}\n')
-      # 将指标保存到文件中
+      # Save metrics to file
     with open(os.path.join(eval_path, 'binary_metrics.txt'), 'w') as f:
         f.write(f'Metric\tValue\n')
         f.write(f'Accuracy\t{final_top1:.2f}\n')
@@ -583,13 +583,13 @@ def merge2(eval_path, num_tasks):
         f.write(f'F1 Score\t{f1 * 100:.2f}\n')
         f.write(f'AUC\t{auc * 100:.2f}\n\n')
         
-        # 添加每个类别的F1分数
+        # Add F1 score for each class
         f.write(f'Per-class F1 scores:\n')
         for i, class_name in enumerate(class_names):
             if i < len(f1_per_class):
                 f.write(f'{class_name}\t{f1_per_class[i] * 100:.2f}\n')
     
-    print(f"二分类评估结果已保存到 {eval_path}")
-    print(f"准确率: {final_top1:.2f}%, 精确率: {precision*100:.2f}%, 召回率: {recall*100:.2f}%, F1分数: {f1*100:.2f}%, AUC: {auc*100:.2f}%")
+    print(f"Binary classification evaluation results saved to {eval_path}")
+    print(f"Accuracy: {final_top1:.2f}%, Precision: {precision*100:.2f}%, Recall: {recall*100:.2f}%, F1 Score: {f1*100:.2f}%, AUC: {auc*100:.2f}%")
     
     return final_top1 * 100, final_top5 * 100, precision * 100, recall * 100, f1 * 100, auc * 100
