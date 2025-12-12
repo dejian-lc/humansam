@@ -9,7 +9,6 @@
 [![ModelScope Dataset](https://img.shields.io/badge/ModelScope-Dataset-purple)](https://www.modelscope.cn/datasets/DawnOfDark/HFV)
 [![HF Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/dejian-lc/humansam)
 [![ModelScope](https://img.shields.io/badge/ModelScope-Model-purple)](https://modelscope.cn/models/DawnOfDark/humansam)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
 </div>
 
