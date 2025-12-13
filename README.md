@@ -38,6 +38,25 @@ To better capture the features of geometry, semantics and spatiotemporal consist
    
    > **Important:** This directory contains the necessary **Flash Attention wheels** required for the installation step below, as well as the pre-trained models.
 
+   The directory structure should be organized as follows:
+
+   ```text
+   checkpoints/
+   ├── depth_model/
+   │   └── depth_pro.pt
+   ├── flashattn_wheel/
+   │   ├── dropout_layer_norm-0.1-cp310-cp310-linux_x86_64.whl
+   │   ├── flash_attn-2.8.3+cu12torch2.8cxx11abiTRUE-cp310-cp310-linux_x86_64.whl
+   │   └── fused_dense_lib-0.0.0-cp310-cp310-linux_x86_64.whl
+   ├── humansam/
+   │   ├── cls_2/
+   │   │   └── cls_2_checkpoint-latest.pth
+   │   └── cls_4/
+   │       └── cls_4_checkpoint-latest.pth
+   └── internvideo2_model/
+       └── internvideo2-L14-k400.bin
+   ```
+
 3. **Create a conda environment**
    ```bash
    conda create -n internvideo_new python=3.10 -y
